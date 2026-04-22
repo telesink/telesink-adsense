@@ -1,0 +1,11 @@
+services:
+  telesink-adsense:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - state-volume:/root/
+    restart: unless-stopped
+
+volumes:
+  state-volume:
