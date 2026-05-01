@@ -44,45 +44,70 @@ The poller will start immediately and continue running.
 
 ## Configuration
 
-1. **Get your `ADSENSE_ACCOUNT_ID`**
-   1. Go to https://www.google.com/adsense and sign in.
-   2. In the left sidebar, click **Account** → **Settings** → **Account information**.
-   3. Your **Publisher ID** will be displayed (looks like `pub-1234567890123456`).
-   4. Prepend `accounts/` to it → this becomes your `ADSENSE_ACCOUNT_ID`.
+### 1. Get your `ADSENSE_ACCOUNT_ID`
 
-      **Example:**<br>
-      Publisher ID: `pub-1234567890123456`<br>
-      → `ADSENSE_ACCOUNT_ID=accounts/pub-1234567890123456`
+1. Go to https://www.google.com/adsense and sign in.
+2. In the left sidebar, click **Account** → **Settings** → **Account information**.
+3. Your **Publisher ID** will be displayed (looks like `pub-1234567890123456`).
+4. Prepend `accounts/` to it → this becomes your `ADSENSE_ACCOUNT_ID`.
 
-2. **Create Google Cloud Project & Enable AdSense Management API**
-   1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-   2. Click **Select a project** → **New Project**.
-   3. Give it a name (e.g. `telesink-adsense-integration`) and click **Create**.
-   4. Once the project is selected, go to **APIs & Services** → **Library**.
-   5. Search for **"AdSense Management API"** and click **Enable**.
+   **Example:**<br>
+   Publisher ID: `pub-1234567890123456`<br>
+   → `ADSENSE_ACCOUNT_ID=accounts/pub-1234567890123456`
 
-3. Create OAuth Client ID (`GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`)
-   1. In the same project, go to **APIs & Services** → **Credentials**.
-   2. Click **+ Create Credentials** → **OAuth client ID**.
-   3. Select **Application type** → **Web application**.
-   4. Give it a name (e.g. `Telesink AdSense`).
-   5. Under **Authorized redirect URIs**, click **+ Add URI** and enter exactly:
+### 2. Create Google Cloud Project & Enable AdSense Management API
 
-   `https://developers.google.com/oauthplayground` 6. Click **Create**. 7. Copy the **Client ID** (`GOOGLE_CLIENT_ID`) and **Client Secret** (`GOOGLE_CLIENT_SECRET`).
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Click **Select a project** → **New Project**.
+3. Give it a name (e.g. `telesink-adsense-integration`) and click **Create**.
+4. Once the project is selected, go to **APIs & Services** → **Library**.
+5. Search for **"AdSense Management API"** and click **Enable**.
 
-4. **Get your `GOOGLE_REFRESH_TOKEN` (using Google OAuth Playground)**
-   1. Open the [Google OAuth 2.0 Playground](https://developers.google.com/oauthplayground).
-   2. Click the gear icon (⚙️) in the top-right corner.
-   3. Check the box **Use your own OAuth credentials**.
-   4. Paste your **Client ID** and **Client Secret** from step 3.
-   5. In **Step 1 — Select & authorize APIs**, paste this exact scope:
+### 3. Configure OAuth Consent Screen
 
-      `https://www.googleapis.com/auth/adsense.readonly`
+1. In the same project, go to **APIs & Services** → **OAuth consent screen**.
+2. Click **Get started** (or **Edit app** if it already exists).
+3. **User Type**: Select **External**.
+4. Fill in the required fields:
+   - **App name**: `Telesink AdSense`
+   - **User support email**: your Gmail address
+   - **Developer contact information**: your email
+5. Click **Save and Continue** on the next two screens (you can skip adding scopes for now).
+6. On the **Test users** screen, click **+ ADD USERS** and add the Gmail address you will use to sign in.
+7. Click **Save and Continue** → **Back to Dashboard**.
 
-5. Click **Authorize APIs**.
-6. Sign in with the Google account that owns your AdSense account and grant the requested permissions.
-7. After authorization succeeds, click **Exchange authorization code for tokens**.
-8. Copy the **refresh_token** value (it is a long string starting with `1//` or similar).
+### 4. Create OAuth Client ID (`GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`)
+
+1. Go to **APIs & Services** → **Credentials**.
+2. Click **+ Create Credentials** → **OAuth client ID**.
+3. Select **Application type** → **Web application**.
+4. Give it a name (e.g. `Telesink AdSense`).
+5. Under **Authorized redirect URIs**, click **+ Add URI** and enter **exactly** this (copy-paste):
+
+   `https://developers.google.com/oauthplayground`
+
+   **Important**: No trailing slash, no `www`, must be https.
+
+6. Click **Create**.
+7. Copy the **Client ID** (`GOOGLE_CLIENT_ID`) and **Client Secret** (`GOOGLE_CLIENT_SECRET`).
+
+   > **⚠️ Wait 5–10 minutes** after creating or editing the OAuth client ID before continuing.
+   > Google takes time to propagate changes. Trying too early is the #1 cause of `redirect_uri_mismatch` errors.
+
+### 5. Get your `GOOGLE_REFRESH_TOKEN` (using Google OAuth Playground)
+
+1. Open the [Google OAuth 2.0 Playground](https://developers.google.com/oauthplayground).
+2. Click the gear icon (⚙️) in the top-right corner.
+3. Check the box **Use your own OAuth credentials**.
+4. Paste your **Client ID** and **Client Secret** from step 3.
+5. In **Step 1 — Select & authorize APIs**, paste this exact scope:
+
+   `https://www.googleapis.com/auth/adsense.readonly`
+
+6. Click **Authorize APIs**.
+7. Sign in with the Google account that owns your AdSense account and grant the requested permissions.
+8. After authorization succeeds, click **Exchange authorization code for tokens**.
+9. Copy the **refresh_token** value (it is a long string starting with `1//` or similar).
 
    This is your `GOOGLE_REFRESH_TOKEN`.
 
@@ -91,6 +116,15 @@ The poller will start immediately and continue running.
    > - The refresh token never expires unless you revoke access or change your Google password.
    > - Keep `GOOGLE_CLIENT_SECRET` and `GOOGLE_REFRESH_TOKEN` private.
    > - If you ever get an `invalid_grant` error later, simply repeat step 4 to generate a fresh refresh token.
+
+### Common issues & quick fixes
+
+| Problem                                         | Most likely cause                                  | Fix                                                         |
+| ----------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
+| `redirect_uri_mismatch`                         | Created client too recently or wrong URI           | Wait 5–10 min + double-check exact URI above                |
+| "Access blocked: This app’s request is invalid" | Consent screen not configured or test user missing | Complete step 3 above                                       |
+| Authorization fails                             | Wrong Google account signed in                     | Sign in with the account that owns the AdSense publisher ID |
+| Still fails after waiting                       | Old client ID                                      | Delete the client and create a new one                      |
 
 ## State management
 
