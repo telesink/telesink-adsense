@@ -79,18 +79,18 @@ The poller will start immediately and continue running.
 
       `https://www.googleapis.com/auth/adsense.readonly`
 
-   6. Click **Authorize APIs**.
-   7. Sign in with the Google account that owns your AdSense account and grant the requested permissions.
-   8. After authorization succeeds, click **Exchange authorization code for tokens**.
-   9. Copy the **refresh_token** value (it is a long string starting with `1//` or similar).
+5. Click **Authorize APIs**.
+6. Sign in with the Google account that owns your AdSense account and grant the requested permissions.
+7. After authorization succeeds, click **Exchange authorization code for tokens**.
+8. Copy the **refresh_token** value (it is a long string starting with `1//` or similar).
 
-      This is your `GOOGLE_REFRESH_TOKEN`.
+   This is your `GOOGLE_REFRESH_TOKEN`.
 
-      > **Important notes**
-      >
-      > - The refresh token never expires unless you revoke access or change your Google password.
-      > - Keep `GOOGLE_CLIENT_SECRET` and `GOOGLE_REFRESH_TOKEN` private.
-      > - If you ever get an `invalid_grant` error later, simply repeat step 4 to generate a fresh refresh token.
+   > **Important notes**
+   >
+   > - The refresh token never expires unless you revoke access or change your Google password.
+   > - Keep `GOOGLE_CLIENT_SECRET` and `GOOGLE_REFRESH_TOKEN` private.
+   > - If you ever get an `invalid_grant` error later, simply repeat step 4 to generate a fresh refresh token.
 
 ## State management
 
