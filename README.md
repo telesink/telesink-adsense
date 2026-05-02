@@ -63,18 +63,21 @@ The poller will start immediately and continue running.
 4. Once the project is selected, go to **APIs & Services** → **Library**.
 5. Search for **"AdSense Management API"** and click **Enable**.
 
-### 3. Configure OAuth Consent Screen
+### 3. Configure OAuth Consent Screen + Publish to Production (Required)
 
-1. In the same project, go to **APIs & Services** → **OAuth consent screen**.
-2. Click **Get started** (or **Edit app** if it already exists).
-3. **User Type**: Select **External**.
-4. Fill in the required fields:
-   - **App name**: `Telesink AdSense`
-   - **User support email**: your Gmail address
-   - **Developer contact information**: your email
-5. Click **Save and Continue** on the next two screens (you can skip adding scopes for now).
-6. On the **Test users** screen, click **+ ADD USERS** and add the Gmail address you will use to sign in.
-7. Click **Save and Continue** → **Back to Dashboard**.
+This step is mandatory for long-lived tokens.
+
+1. Go to **APIs & Services** → **OAuth consent screen** (or **Google Auth Platform** in the left sidebar).
+2. You should land on the **Audience** tab.
+3. Set **User type** to **External** (if not already selected).
+4. At the top, click **Publish app** → **Confirm**.
+
+   Your app is now in **In production** status. The refresh token you generate next
+   will be long-lived (no 7-day expiration).
+
+   > **Note about user cap**: You may see a "100 user cap". This only applies to
+   > unapproved sensitive scopes. The AdSense scope we use is pre-approved, so this
+   > limit does not affect normal usage.
 
 ### 4. Create OAuth Client ID (`GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET`)
 
