@@ -120,15 +120,6 @@ This step is mandatory for long-lived tokens.
    > - Keep `GOOGLE_CLIENT_SECRET` and `GOOGLE_REFRESH_TOKEN` private.
    > - If you ever get an `invalid_grant` error later, simply repeat step 4 to generate a fresh refresh token.
 
-### Common issues & quick fixes
-
-| Problem                                         | Most likely cause                                  | Fix                                                         |
-| ----------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
-| `redirect_uri_mismatch`                         | Created client too recently or wrong URI           | Wait 5–10 min + double-check exact URI above                |
-| "Access blocked: This app’s request is invalid" | Consent screen not configured or test user missing | Complete step 3 above                                       |
-| Authorization fails                             | Wrong Google account signed in                     | Sign in with the account that owns the AdSense publisher ID |
-| Still fails after waiting                       | Old client ID                                      | Delete the client and create a new one                      |
-
 ## State management
 
 The application persists deduplication state in `state.json`. This file is
